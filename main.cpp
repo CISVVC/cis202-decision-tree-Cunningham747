@@ -86,6 +86,7 @@ int main(int argc, char **argv)
     std::fstream in;             // Init filestream
     in.open(filename);           // Open filestream
     Binary_tree root = read(in); // Initilize root Binary_tree with file data
+    in.close();
 
     Binary_tree question_tree = root;      // Declare a Binary_tree question_tree and set it to root
     string response, n_answer, n_question; // Declare strings for response and possible user input tree
@@ -99,8 +100,8 @@ int main(int argc, char **argv)
         if (left.empty() && right.empty()) // If there are no more questions
         {
             do
-            {
-                std::cout << "Is it a(n) " << question_tree.data() << std::endl; // Output question                                                             // Clear response string
+            {  
+                std::cout << "Is it " << article(question_tree.data()) << " " << question_tree.data() << std::endl; 
                 std::cin >> response;                                          // Dump input into response string
             } while (response != "y" && response != "n");                      // Loop to iterate if non-valid response
 
@@ -120,7 +121,7 @@ int main(int argc, char **argv)
 
                 // Ask user for question for their given animal
 
-                std::cout << "Please give me a question that is true for " << n_answer
+                std::cout << "Please give me a question that is true for " << article(n_answer) << " " << n_answer
                           << " and false for a(n) " << question_tree.data() << std::endl;
                 cin.clear();
                 getline(std::cin, response); // Dump input into response string
@@ -137,15 +138,13 @@ int main(int argc, char **argv)
             }
             //Ask if user wants to play again
 
-            question_tree = root; // reset question tree to starting position
+            
             do
             {
                 std::cout << "May I try again?";
                 std::cin >> response; // Dump input into response string
-                if (response != "y")
-                {
-                    done = true;
-                } // Ends game
+                if (response != "y") {done = true;} // Ends game
+                else {question_tree = root;} // reset question tree to starting position}
             } while (response != "y" && response != "n");
         }
         else
@@ -169,7 +168,8 @@ int main(int argc, char **argv)
 
     //Write question tree to file
     std::cout << "Writing to file...";
-    question_tree = root;
-    write(in, question_tree, 0);
+    in.open(filename);
+    write(in, root, 0);
+    in.close();
     return 0;
 }
