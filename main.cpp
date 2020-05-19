@@ -100,7 +100,7 @@ int main(int argc, char **argv)
         {
             do
             {
-                std::cout << "Is it an " << question_tree.data() << std::endl; // Output question                                                             // Clear response string
+                std::cout << "Is it a(n) " << question_tree.data() << std::endl; // Output question                                                             // Clear response string
                 std::cin >> response;                                          // Dump input into response string
             } while (response != "y" && response != "n");                      // Loop to iterate if non-valid response
 
