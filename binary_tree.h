@@ -71,6 +71,15 @@ public:
     */
     Binary_tree right() const;
 
+   /**
+    * Replaces current tree with new tree
+       @param root_data the data for the root
+       @param left the left subtree
+       @param right the right subtree
+       @return void function, no return
+   */
+    void replace(string root_data, Binary_tree left, Binary_tree right);
+
 private:
     /**
        Returns the height of the subtree whose root is the given node.

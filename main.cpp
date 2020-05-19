@@ -1,131 +1,175 @@
 /*
-   This program will create a decision tree for an animal
-   guessing game.
-
-   
-   Pseudocode has been added as a hint to help with developing this
-   program
+   File: Binary Tree Project
+   Description: Creates a binary tree,from a command line argumented file, for an animal guessing game. Writes 
+                additional nodes/subtrees to file for future games.
+   Author: Christopher Cunningham
+   Email:
 */
 
 #include <iostream>
 #include <fstream>
+#include <istream>
 #include <string>
 #include "binary_tree.h"
 
-Binary_tree read(istream& in)
+Binary_tree read(istream &in)
 {
-//   Note the stream is called in
-//
-//    declare data as string
-//    declare level as integer
-//    get level from stream
-//    get line from stream and assign it to data
-//    if level == -1
-//        return Binary_tree();
-//
-//    declare left as a Binary_tree and assign it read(in) 
-//      Note:  it is a recursive call
-//
-//    declare right as a Binary_tree and assign it to read(in)
-//      Note:  it is a recursive call
-//
-//    return Binary_tree(data, left, right)
+    // Note the stream is called in
+
+    string data; // Declare data as string
+    int level;   // Declare level as integer
+
+    while (in.good()) // Loop to iterate through input file
+    {
+        in >> level; // Get level from stream
+
+        // Determine if at end of path
+        if (level == -1)
+        {
+            return Binary_tree();
+        }
+
+        getline(in >> std::ws, data); // Get line from stream, assign to data
+
+        Binary_tree left(read(in)); // Declare left as Binary_tree, assign it read(in)
+
+        Binary_tree right(read(in)); // Declare right as Binary_tree, assign it read(in)
+
+        return Binary_tree(data, left, right);
+    }
 }
 
-void write(ostream& out, const Binary_tree& tree, int level)
+void write(ostream &out, const Binary_tree &tree, int level)
 {
-//    if tree.empty()
-//        output -1 + \n to out
-//        return 
-//    output level + ' ' + tree.data() + \n to out
-//    call write (out, tree.left(), level + 1)
-//    call write (out, tree.right(), level + 1)
+
+    // Determine if tree is empty
+    if (tree.empty())
+    {
+        out << -1 << "\n";
+        return;
+    }
+
+    out << level << ' ' << tree.data() << std::endl; // Formatted line in output file
+    write(out, tree.left(), level + 1);              // Output left tree
+    write(out, tree.right(), level + 1);             // Output right tree
 }
 
 /*
  * helper function that will help with definite or indefinite 
  * articles in a string
  */
-std::string article(const std::string& entry)
+std::string article(const std::string &entry)
 {
     std::string article = "a";
     if (std::string("aeiou").find(entry[0]) != std::string::npos)
     {
-        article =  "an";
+        article = "an";
     }
     return article;
 }
 
-int main(int argc,char **argv)
+int main(int argc, char **argv)
 {
-    Binary_tree root;  
-    // Strategy
-    //  get the filename from the command line arguments
-    //  open the file stream
-    //  initialize the root Binary_tree variable with data from the 
-    //  file stream to initialize the decision tree root by calling
-    //  the read function
-    //
+    string filename; // String for holding command line argument filename
 
-    // declare a Binary_tree question_tree and set it to root
-    // while not done
-    //    declare a string called response
-    //    declare a Binary_tree called left and set it to 
-    //       question_tree.left()
-    //
-    //    declare a Binary_tree called right and set it to 
-    //       question_tree.right()
-    //
-    //    if left.empty() and right.empty()
-            // Add code here that will carry on something like the 
-            // following dialog:
-            //
-            //  Is it a mammal? Y  
-            //  Does it have stripes? N  
-            //  Is it a pig? N  
+    // Check for command-line arguments and process
+    if (argc > 1)
+    {
+        filename = argv[1]; // Get filename from command line arguments
+    }
+    else
+    {
+        std::cout << "No filename specified. Closing program.";
+        return 0;
+    }
 
-            // get the response from the user and 
-            // if it is correct,
-            //     print  "I guessed it!"
-            // else
-            //    print "I give up. What is it?"
-            //    if user enters A hamster  
-            //    then
-            //        print "Please give me a question that is true 
-            //                  for a hamster and false for a pig."
-            //        get the response from the user
-            //             example user response: Is it small and cuddly?  
-            //
-            //        Insert a node into question_tree so that this 
-            //        question is used in future dialogs:
-            //
-            // One strategy to consider is to implement a set method 
-            //   in the Binary_tree called root
-            //   the set method will set the data and the left and right 
-            //   subtrees for the given root
-            //
-            //  Future dialog:
-            //     print "May I try again? "
-            //     get response
-            //     if response is yes
-            //         done = true
-            //     else
-            //         question_tree = root
-      //  else
-      //      do
-      //        print Is it a question_tree.data()  (y/n): 
-      //        get response
-      //      while (response != y and response != n)
+    std::fstream in;             // Init filestream
+    in.open(filename);           // Open filestream
+    Binary_tree root = read(in); // Initilize root Binary_tree with file data
 
-      //      if response is y
-      //         question_tree = left;
-      //      else
-      //         question_tree = right;
+    Binary_tree question_tree = root;      // Declare a Binary_tree question_tree and set it to root
+    string response, n_answer, n_question; // Declare strings for response and possible user input tree
+    bool done = false;                     //Boolean to control loop
 
-    // When done, write the decision tree to the data file by calling
-    // the write function so that the new
-    // question and answer is added to the data file
+    while (!done)
+    {
+        Binary_tree left = question_tree.left();   // Declare Binary_tree left,set to question_tree.left()
+        Binary_tree right = question_tree.right(); // Declare Binary_tree right,set to question_tree.right()
+
+        if (left.empty() && right.empty()) // If there are no more questions
+        {
+            do
+            {
+                std::cout << "Is it an " << question_tree.data() << std::endl; // Output question                                                             // Clear response string
+                std::cin >> response;                                          // Dump input into response string
+            } while (response != "y" && response != "n");                      // Loop to iterate if non-valid response
+
+            if (response == "y")
+            {
+                std::cout << "I guessed it!\n";
+            }
+            else
+            {
+                // Ask what the user was thinking of
+
+                std::cout << "I give up. What is it?" << std::endl;
+                cin.clear();
+                cin.ignore();
+                getline(std::cin, response); // Dump input into response string
+                n_answer = response;         // Process articles from input
+
+                // Ask user for question for their given animal
+
+                std::cout << "Please give me a question that is true for " << n_answer
+                          << " and false for a(n) " << question_tree.data() << std::endl;
+                cin.clear();
+                getline(std::cin, response); // Dump input into response string
+                n_question = response;       // Dump response string into new question string
+
+                //Insert new node into question tree
+
+                string temp = question_tree.data(); //Store current data
+
+                Binary_tree n_left(n_answer);              //New "no" binary tree
+                Binary_tree n_right(question_tree.data()); //New "yes" binary tree
+
+                question_tree.replace(n_question, n_left, n_right); //Replaces current node with new input binary tree
+            }
+            //Ask if user wants to play again
+
+            question_tree = root; // reset question tree to starting position
+            do
+            {
+                std::cout << "May I try again?";
+                std::cin >> response; // Dump input into response string
+                if (response != "y")
+                {
+                    done = true;
+                } // Ends game
+            } while (response != "y" && response != "n");
+        }
+        else
+        {
+            do
+            {
+                std::cout << question_tree.data() << std::endl; // Output question
+                std::cin >> response;                           // Dump input into response string
+            } while (response != "y" && response != "n");       // Loop to iterate if non-valid response
+
+            if (response == "y")
+            {
+                question_tree = left; // Move to left tree if yes
+            }
+            else
+            {
+                question_tree = right; // Move to right tree if no
+            }
+        }
+    }
+
+    //Write question tree to file
+    std::cout << "Writing to file...";
+    question_tree = root;
+    write(in, question_tree, 0);
+    return 0;
 }
-
-
-

@@ -66,5 +66,12 @@ Binary_tree Binary_tree::right() const
     return result;
 }
 
+void Binary_tree::replace(string root_data, Binary_tree left, Binary_tree right)
+{
+    root->data = root_data;
+    root->left = left.root;
+    root->right = right.root;
+}
+
 
 

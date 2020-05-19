@@ -1,11 +1,16 @@
-all:
-	@g++ -o main *.cpp
 
+all:
+	@g++ -o main main.cpp
+
+full:
+	@g++ -c *.cpp
+	@g++ -o main *.o
+
+full-verbose:
+	@g++ -c *.cpp -Wall
+	@g++ -o main *.o
 run:
 	@./main
-
-edit:
-	@vim main.cpp
 
 clean:
 	@rm main
